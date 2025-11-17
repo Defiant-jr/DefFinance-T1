@@ -74,8 +74,8 @@ DefFinance-v1/
 │   ├── lib/                 # clientes e utilitários
 │   ├── pages/               # telas principais protegidas por rota
 │   ├── services/            # integrações externas (Google Sheets)
-│   ├── App.jsx              # definição de rotas e layout
-│   └── main.jsx             # bootstrap do React + Tailwind
+│   ├── App.tsx              # definição de rotas e layout
+│   └── main.tsx             # bootstrap do React + Tailwind
 ├── server/
 │   ├── app.js               # fábrica do servidor Express
 │   ├── index.js             # entrypoint (npm run start)
@@ -88,13 +88,13 @@ DefFinance-v1/
 ```
 
 ## Fluxos principais
-- **Login / Cadastro** (`src/pages/Login.jsx`, `src/pages/SignUp.jsx`): formulários com Radix UI, validação básica e chamadas ao `SupabaseAuthContext` (funções `signIn`, `signUp`).
-- **Dashboard** (`src/pages/Dashboard.jsx`): carrega `lancamentos` do Supabase, consolida indicadores, renderiza gráfico e aciona importação de planilhas.
-- **Contas a Pagar/Receber** (`src/pages/ContasPagar.jsx`, `src/pages/ContasReceber.jsx`): exibem tabelas filtráveis, contadores por status e ações de exportação via `jspdf`/`html2canvas`.
-- **Fluxo de Caixa** (`src/pages/FluxoCaixa.jsx`, `src/pages/FluxoCaixaDetalhado.jsx`): combina dados previstos vs realizados, segmentação por período e exportação.
-- **Relatórios** (`src/pages/Relatorios.jsx`, `RelatorioContas.jsx`, `DreGerencial.jsx`): agregações e análises para tomada de decisão, geração de PDFs e impressão.
-- **Lançamentos** (`src/pages/Lancamentos.jsx`): CRUD simplificado com formulário dinâmico e persistência Supabase.
-- **Cadastros** (`src/pages/Cadastros.jsx`): gerenciamento de entidades auxiliares para alimentar os demais módulos.
+- **Login / Cadastro** (`src/pages/Login.tsx`, `src/pages/SignUp.tsx`): formulários com Radix UI, validação básica e chamadas ao `SupabaseAuthContext` (funções `signIn`, `signUp`).
+- **Dashboard** (`src/pages/Dashboard.tsx`): carrega `lancamentos` do Supabase, consolida indicadores, renderiza gráfico e aciona importação de planilhas.
+- **Contas a Pagar/Receber** (`src/pages/ContasPagar.tsx`, `src/pages/ContasReceber.tsx`): exibem tabelas filtráveis, contadores por status e ações de exportação via `jspdf`/`html2canvas`.
+- **Fluxo de Caixa** (`src/pages/FluxoCaixa.tsx`, `src/pages/FluxoCaixaDetalhado.tsx`): combina dados previstos vs realizados, segmentação por período e exportação.
+- **Relatórios** (`src/pages/Relatorios.tsx`, `RelatorioContas.tsx`, `DreGerencial.tsx`): agregações e análises para tomada de decisão, geração de PDFs e impressão.
+- **Lançamentos** (`src/pages/Lancamentos.tsx`): CRUD simplificado com formulário dinâmico e persistência Supabase.
+- **Cadastros** (`src/pages/Cadastros.tsx`): gerenciamento de entidades auxiliares para alimentar os demais módulos.
 
 ## Integrações externas
 - **Supabase**:

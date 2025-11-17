@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.node.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist-server",
+    "noEmit": false,
+    "tsBuildInfoFile": "node_modules/.cache/tsconfig.server.tsbuildinfo"
+  },
+  "include": ["server/**/*.ts", "tools/**/*.ts"],
+  "exclude": ["dist", "dist-server", "node_modules"]
+}
