@@ -13,6 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const VITE_PROJECT_ROOT = path.resolve(__dirname, '../..');
 const EDITABLE_HTML_TAGS = ["a", "Button", "button", "p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "Label", "img"];
+const traverseFn = (traverse as any)?.default || traverse;
 
 function parseEditId(editId) {
   const parts = editId.split(':');
@@ -108,7 +109,7 @@ export default function inlineEditPlugin() {
 
         let attributesAdded = 0;
 
-        traverseBabel.default(babelAst, {
+        traverseFn(babelAst, {
           enter(path) {
             if (path.isJSXOpeningElement()) {
               const openingNode = path.node;
@@ -310,7 +311,7 @@ export default function inlineEditPlugin() {
                 }
               }
             };
-            traverseBabel.default(babelAst, visitor);
+            traverseFn(babelAst, visitor);
 
             if (!targetNodePath) {
               res.writeHead(404, { 'Content-Type': 'application/json' });
