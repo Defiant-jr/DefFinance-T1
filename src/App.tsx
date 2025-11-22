@@ -11,6 +11,7 @@ import FluxoCaixaDetalhado from '@/pages/FluxoCaixaDetalhado';
 import ImpressaoDoc from '@/pages/ImpressaoDoc';
 import Lancamentos from '@/pages/Lancamentos';
 import Login from '@/pages/Login';
+import MapaMensal from '@/pages/MapaMensal';
 import RelatorioContas from '@/pages/RelatorioContas';
 import RelatorioFechamento from '@/pages/RelatorioFechamento';
 import Relatorios from '@/pages/Relatorios';
@@ -154,6 +155,14 @@ function App() {
 							element={
 								<PrivateRoute>
 									<ImpressaoDoc />
+								</PrivateRoute>
+							}
+						/>
+						<Route
+							path="/relatorios/mapa-mensal"
+							element={
+								<PrivateRoute>
+									<MapaMensal />
 								</PrivateRoute>
 							}
 						/>
