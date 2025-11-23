@@ -12,6 +12,10 @@ test('GET /health retorna status ok', async (t) => {
   t.after(() => server.close());
 
   const address = server.address();
+  if (!address || typeof address === 'string') {
+    throw new Error('Servidor retornou endereço inválido para teste');
+  }
+
   const response = await fetch(`http://127.0.0.1:${address.port}/health`);
 
   assert.equal(response.status, 200);

@@ -2,13 +2,17 @@
   "compilerOptions": {
     "allowJs": true,
     "composite": true,
+    "target": "ES2020",
+    "lib": ["ES2021"],
     "module": "ESNext",
     "moduleResolution": "Node",
+    "downlevelIteration": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "types": ["node"]
+    "types": ["node"],
+    "skipLibCheck": true
   },
   "include": [
     "vite.config.ts",

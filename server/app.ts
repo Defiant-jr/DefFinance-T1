@@ -15,7 +15,16 @@ const googleSheetsConfig = {
   recebimentosSheetId: process.env.GOOGLE_SHEET_RECEBIMENTOS_ID
 };
 
-const parseDate = (dateString) => {
+type CreateAppOptions = {
+  withFrontend?: boolean;
+};
+
+type SheetRow = string[];
+type SheetValuesResponse = {
+  values?: SheetRow[];
+};
+
+const parseDate = (dateString: string) => {
   if (!dateString || !/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
     return null;
   }
@@ -25,7 +34,7 @@ const parseDate = (dateString) => {
 
 const toIsoDate = (date) => (date ? date.toISOString().split('T')[0] : '');
 
-const parseCurrency = (value) => {
+const parseCurrency = (value: string) => {
   if (typeof value !== 'string') {
     return 0;
   }
@@ -35,7 +44,11 @@ const parseCurrency = (value) => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
-const fetchSheetRange = async (sheetId, range, apiKey) => {
+const fetchSheetRange = async (
+  sheetId: string,
+  range: string,
+  apiKey: string
+): Promise<SheetValuesResponse> => {
   const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`);
   url.searchParams.set('key', apiKey);
 
@@ -43,10 +56,10 @@ const fetchSheetRange = async (sheetId, range, apiKey) => {
   if (!response.ok) {
     throw new Error(`Google Sheets request failed: ${response.status} ${response.statusText}`);
   }
-  return response.json();
+  return response.json() as Promise<SheetValuesResponse>;
 };
 
-const buildPagamentos = (values, today) => {
+const buildPagamentos = (values: SheetRow[] | undefined, today: Date) => {
   if (!Array.isArray(values) || values.length <= 1) {
     return [];
   }
@@ -83,7 +96,7 @@ const buildPagamentos = (values, today) => {
   return pagamentos;
 };
 
-const buildRecebimentos = (values, today) => {
+const buildRecebimentos = (values: SheetRow[] | undefined, today: Date) => {
   if (!Array.isArray(values) || values.length <= 1) {
     return [];
   }
@@ -119,7 +132,7 @@ const buildRecebimentos = (values, today) => {
   return recebimentos;
 };
 
-export async function createApp(options = {}) {
+export async function createApp(options: CreateAppOptions = {}) {
   const { withFrontend = true } = options;
   const app = express();
 
