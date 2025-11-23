@@ -151,12 +151,12 @@ const calendarCells = useMemo<CalendarCell[]>(() => {
     }
 
     const current = new Date(`${selectedMonth}-01T00:00:00`);
-    const doc = new jsPDF({ orientation: 'landscape' });
-    const margin = 12;
-    const headerY = 14;
-    const summaryStartY = headerY + 6;
-    const summaryGap = 6;
-    const gridStartY = summaryStartY + summaryGap * 3 + 6;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    const margin = 24;
+    const headerY = margin;
+    const summaryStartY = headerY + 22;
+    const summaryGap = 14;
+    const gridStartY = summaryStartY + summaryGap * 3 + 16;
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const cellsPerRow = 7;
@@ -167,11 +167,21 @@ const calendarCells = useMemo<CalendarCell[]>(() => {
     const rows = Math.max(1, Math.ceil(cellsWithPlaceholders.length / cellsPerRow));
     const cellWidth = (pageWidth - margin * 2) / cellsPerRow;
     const cellHeight = (pageHeight - gridStartY - margin) / rows;
-    const padding = 4;
+    const padding = 10;
+    const headerColor = { r: 31, g: 41, b: 55 }; // texto principal em branco se fosse dark, mas agora escuro para fundo branco
+    const mutedColor = { r: 120, g: 130, b: 145 };
+    const borderColor = { r: 200, g: 210, b: 220 };
+    const backgroundColor = { r: 255, g: 255, b: 255 };
+    const entryColor = { r: 46, g: 204, b: 113 };
+    const expenseColor = { r: 0, g: 0, b: 0 };
 
-    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
     doc.text(`Mapa Mensal - ${format(current, 'MMMM yyyy')}`, margin, headerY);
-    doc.setFontSize(10);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0);
+    doc.setFontSize(12);
     doc.text(
       `Total de Entradas (inclui atrasados e cash): ${formatCurrency(totalsWithAdjustments.entradas)}`,
       margin,
@@ -195,68 +205,71 @@ const calendarCells = useMemo<CalendarCell[]>(() => {
       const y = gridStartY + row * cellHeight;
 
       if (!cell) {
+        // células vazias do início do mês
         doc.setLineDash([2, 2], 0);
-        doc.setDrawColor(180);
+        doc.setDrawColor(mutedColor.r, mutedColor.g, mutedColor.b);
         doc.rect(x, y, cellWidth, cellHeight);
         doc.setLineDash([]);
         doc.setDrawColor(0);
         return;
       }
 
-      doc.setDrawColor(200);
-      doc.rect(x, y, cellWidth, cellHeight);
+      // container com fundo e borda para espelhar a UI
+      doc.setFillColor(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+      doc.setDrawColor(borderColor.r, borderColor.g, borderColor.b);
+      doc.roundedRect(x, y, cellWidth, cellHeight, 8, 8, 'FD');
       doc.setDrawColor(0);
 
-      doc.setFontSize(10);
-      doc.text(format(cell.date, 'd'), x + padding, y + padding + 4);
-      doc.setTextColor(120);
-      doc.text(formatCurrency(cell.saidasTotal - cell.entradasTotal), x + cellWidth - padding, y + padding + 4, {
-        align: 'right',
-      });
-      doc.setTextColor(0);
+      const netValue = cell.entradasTotal - cell.saidasTotal;
+      const netText = formatCurrency(netValue);
 
-      const listStartY = y + padding + 10;
-      const listMaxY = y + cellHeight - 14;
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(headerColor.r, headerColor.g, headerColor.b);
+      doc.text(format(cell.date, 'd'), x + padding, y + padding + 2);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(mutedColor.r, mutedColor.g, mutedColor.b);
+      doc.text(netText, x + cellWidth - padding, y + padding + 2, { align: 'right' });
+
+      const listStartY = y + padding + 18;
+      const listMaxY = y + cellHeight - 26;
       let cursorY = listStartY;
 
       if (cell.despesas.length === 0) {
-        doc.setFontSize(8);
-        doc.setTextColor(140);
+        doc.setFontSize(9);
         doc.text('Sem despesas', x + padding, cursorY);
-        doc.setTextColor(0);
       } else {
-        doc.setFontSize(8);
+        doc.setFontSize(9);
         const maxItems = 4;
+        const nameWidth = cellWidth - padding * 2 - 58; // deixa espaço para o valor à direita
         cell.despesas.slice(0, maxItems).forEach((despesa) => {
           if (cursorY > listMaxY) return;
           const name = despesa.cliente_fornecedor || despesa.descricao || 'Despesa';
+          const nameLine = (doc.splitTextToSize(name, nameWidth) as string[])[0] || name;
           const valueText = formatCurrency(despesa.valor || 0);
-          const line = `${name} - ${valueText}`;
-          const wrapped = doc.splitTextToSize(line, cellWidth - padding * 2);
-          wrapped.forEach((txt) => {
-            if (cursorY <= listMaxY) {
-              doc.text(txt, x + padding, cursorY);
-              cursorY += 4;
-            }
-          });
+
+          doc.setTextColor(headerColor.r, headerColor.g, headerColor.b);
+          doc.text(nameLine, x + padding, cursorY);
+          doc.setTextColor(expenseColor.r, expenseColor.g, expenseColor.b);
+          doc.text(valueText, x + cellWidth - padding, cursorY, { align: 'right' });
+
+          cursorY += 12;
         });
         if (cell.despesas.length > maxItems && cursorY <= listMaxY) {
-          doc.setTextColor(120);
+          doc.setTextColor(mutedColor.r, mutedColor.g, mutedColor.b);
+          doc.setFontSize(8);
           doc.text(`+${cell.despesas.length - maxItems} itens`, x + padding, cursorY);
-          doc.setTextColor(0);
         }
       }
 
-      doc.setDrawColor(210);
-      doc.line(x + padding, y + cellHeight - 10, x + cellWidth - padding, y + cellHeight - 10);
+      // linha inferior e valor de entradas
+      doc.setDrawColor(200, 210, 230);
+      doc.line(x + padding, y + cellHeight - 16, x + cellWidth - padding, y + cellHeight - 16);
       doc.setDrawColor(0);
       doc.setFontSize(9);
-      doc.setTextColor(34, 197, 94);
-      doc.text(
-        `Entradas: ${formatCurrency(cell.entradasTotal)}`,
-        x + padding,
-        y + cellHeight - 4,
-      );
+      doc.setTextColor(entryColor.r, entryColor.g, entryColor.b);
+      doc.text(`Entradas: ${formatCurrency(cell.entradasTotal)}`, x + padding, y + cellHeight - 6);
       doc.setTextColor(0);
     });
 
