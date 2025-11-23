@@ -232,16 +232,18 @@ const calendarCells = useMemo<CalendarCell[]>(() => {
       doc.setTextColor(mutedColor.r, mutedColor.g, mutedColor.b);
       doc.text(netText, x + cellWidth - padding, y + padding + 2, { align: 'right' });
 
-      const listStartY = y + padding + 18;
-      const listMaxY = y + cellHeight - 26;
+      const listStartY = y + padding + 12;
+      const listMaxY = y + cellHeight - 20;
       let cursorY = listStartY;
 
       if (cell.despesas.length === 0) {
-        doc.setFontSize(9);
+        doc.setFontSize(8);
         doc.text('Sem despesas', x + padding, cursorY);
       } else {
-        doc.setFontSize(9);
-        const maxItems = 4;
+        const itemFontSize = 7;
+        const itemLineHeight = 8;
+        const maxItems = 7;
+        doc.setFontSize(itemFontSize);
         const nameWidth = cellWidth - padding * 2 - 58; // deixa espaço para o valor à direita
         cell.despesas.slice(0, maxItems).forEach((despesa) => {
           if (cursorY > listMaxY) return;
@@ -254,22 +256,22 @@ const calendarCells = useMemo<CalendarCell[]>(() => {
           doc.setTextColor(expenseColor.r, expenseColor.g, expenseColor.b);
           doc.text(valueText, x + cellWidth - padding, cursorY, { align: 'right' });
 
-          cursorY += 12;
+          cursorY += itemLineHeight;
         });
         if (cell.despesas.length > maxItems && cursorY <= listMaxY) {
           doc.setTextColor(mutedColor.r, mutedColor.g, mutedColor.b);
-          doc.setFontSize(8);
+          doc.setFontSize(7);
           doc.text(`+${cell.despesas.length - maxItems} itens`, x + padding, cursorY);
         }
       }
 
       // linha inferior e valor de entradas
       doc.setDrawColor(200, 210, 230);
-      doc.line(x + padding, y + cellHeight - 16, x + cellWidth - padding, y + cellHeight - 16);
+      doc.line(x + padding, y + cellHeight - 12, x + cellWidth - padding, y + cellHeight - 12);
       doc.setDrawColor(0);
-      doc.setFontSize(9);
+      doc.setFontSize(8);
       doc.setTextColor(entryColor.r, entryColor.g, entryColor.b);
-      doc.text(`Entradas: ${formatCurrency(cell.entradasTotal)}`, x + padding, y + cellHeight - 6);
+      doc.text(`Entradas: ${formatCurrency(cell.entradasTotal)}`, x + padding, y + cellHeight - 2);
       doc.setTextColor(0);
     });
 

@@ -144,7 +144,9 @@ const RelatorioFechamento = () => {
     cursorY += 14;
     doc.text(`Unidade: ${unitLabel}`, marginLeft, cursorY);
 
-    const buildTable = (title, items) => {
+    const buildTable = (title, items, options: { fontSize?: number; cellPadding?: number } = {}) => {
+      const { fontSize = 4, cellPadding = 3 } = options;
+      const limitedItems = items.slice(0, 6);
       cursorY += 24;
       doc.setFontSize(13);
       doc.text(title, marginLeft, cursorY);
@@ -154,15 +156,15 @@ const RelatorioFechamento = () => {
       doc.autoTable({
         startY: tableStartY,
         head: [['Nome', 'Vencimento', 'Unidade', 'Valor']],
-        body: items.map((item) => [
+        body: limitedItems.map((item) => [
           item.cliente_fornecedor || '-',
           formatDate(item.data),
           item.unidade || '-',
           formatCurrency(item.valor),
         ]),
         theme: 'grid',
-        styles: { fontSize: 10, cellPadding: 6 },
-        headStyles: { fillColor: [37, 99, 235] },
+        styles: { fontSize, cellPadding },
+        headStyles: { fillColor: [37, 99, 235], fontSize: fontSize + 1 },
         columnStyles: {
           3: { halign: 'right' },
         },
@@ -172,7 +174,7 @@ const RelatorioFechamento = () => {
     };
 
     if (entries.length) {
-      buildTable('Entradas em aberto e a vencer', entries);
+      buildTable('Entradas em aberto e a vencer', entries, { fontSize: 4, cellPadding: 3 });
       cursorY += 18;
       doc.text(`Total de entradas: ${formatCurrency(totalEntries)}`, marginLeft, cursorY);
     } else {
@@ -182,7 +184,7 @@ const RelatorioFechamento = () => {
 
     if (exits.length) {
       cursorY += 32;
-      buildTable('Saidas em atraso e em aberto', exits);
+      buildTable('Saidas em atraso e em aberto', exits, { fontSize: 4, cellPadding: 3 });
       cursorY += 18;
       doc.text(`Total de saidas: ${formatCurrency(totalExits)}`, marginLeft, cursorY);
     } else {
